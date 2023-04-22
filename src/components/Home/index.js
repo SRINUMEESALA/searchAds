@@ -141,7 +141,7 @@ const Home = () => {
   );
 
   const renderUi = () => {
-    switch (apiStatusConstants.load) {
+    switch (getAdsApiStatus) {
       case apiStatusConstants.success:
         return renderSuccessView();
       case apiStatusConstants.fail:
