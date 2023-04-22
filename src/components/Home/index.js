@@ -6,6 +6,8 @@ import { AiOutlineSearch } from "react-icons/ai";
 import "./index.css";
 
 import * as React from "react";
+import axios from "axios";
+import { Skeleton } from "@mui/material";
 
 export const apiStatusConstants = {
   fail: "Failed",
@@ -26,19 +28,9 @@ const Home = () => {
 
   const getAds = async () => {
     setGetAdsApiStatus(apiStatusConstants.load);
-
-    // const url = `http://localhost:4000/getAds?search=${searchInput}`;
-    const url = `http://localhost:4000/get-ads?search=${searchInput}`;
-    const options = {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-      },
-    };
     try {
-      const response = await fetch(url, options);
-      const result = await response.json();
-      setAdsList(result.data);
+      const result = await axios(`/get-ads?search=${searchInput}`);
+      setAdsList(result.data.data);
       setGetAdsApiStatus(apiStatusConstants.success);
     } catch (error) {
       console.log("Something went wrong in ads api call", error);
@@ -64,10 +56,10 @@ const Home = () => {
       <div className=" mt-3 w-75">
         <div className="d-flex justify-content-between mb-3">
           <h1 className="h2 mb-3 font-weight-bold">Available Advertisements</h1>
-          <div class="input-group w-25 mb-3">
+          <div className="input-group w-25 mb-3">
             <input
               type="text"
-              class="form-control"
+              className="form-control"
               placeholder="Type here and Click Enter"
               aria-label="Username"
               value={searchInput}
@@ -75,7 +67,7 @@ const Home = () => {
               onChange={onChangeInput}
               onKeyDown={onClickEnterSearch}
             />
-            <div class="input-group-prepend p-0 ">
+            <div className="input-group-prepend p-0 ">
               <AiOutlineSearch className="h3 m-0 p-0 pl-1" />
             </div>
           </div>
@@ -125,49 +117,31 @@ const Home = () => {
   );
 
   const renderLoadingView = () => (
-    <div className="row mt-5 p-0">
-      {Array.from({ length: 20 }).map(() => (
-        <div
-          className="col-3 p-0 d-flex justify-content-center mb-4"
-          key={uuidv4()}
-          style={{ height: "45vh" }}>
-          <Card key="ajsdfh" className="pb-4">
-            <Placeholder>
-              <div className="" style={{ height: "200px" }}>
-                <Placeholder.Image square />
-              </div>
-            </Placeholder>
-            <Card.Content>
-              <Placeholder>
-                <Placeholder.Header>
-                  <Placeholder.Line length="long" />
-                </Placeholder.Header>
-                <Placeholder.Paragraph>
-                  <Placeholder.Line length="short" />
-                </Placeholder.Paragraph>
-
-                <Placeholder.Paragraph>
-                  <div className="d-flex justify-content-start">
-                    <div className="" style={{ width: "80%" }}>
-                      <Placeholder.Line length="short" />
-                    </div>
+    <div className="d-flex justify-content-center min-vh-100">
+      <div className=" mt-3 w-75">
+        <div className="row mt-5 p-0">
+          {Array.from({ length: 20 }).map(() => (
+            <div
+              className="col-4 p-0 d-flex justify-content-center mb-4 p-3"
+              key={uuidv4()}
+              style={{ height: "45vh" }}>
+              <Card key="ajsdfh" className="pb-4 p-2">
+                <Placeholder>
+                  <div className="" style={{ height: "240px" }}>
+                    <Placeholder.Image square />
                   </div>
-                </Placeholder.Paragraph>
-              </Placeholder>
-            </Card.Content>
-            <Card.Content extra>
-              <Button disabled={true} className="w-100">
-                Book Now
-              </Button>
-            </Card.Content>
-          </Card>
+                </Placeholder>
+                <Skeleton variant="rectangular" height={20} className="mt-3" />
+              </Card>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 
   const renderUi = () => {
-    switch (getAdsApiStatus) {
+    switch (apiStatusConstants.load) {
       case apiStatusConstants.success:
         return renderSuccessView();
       case apiStatusConstants.fail:
